@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  nominatim:
+    container_name: nominatim
+    image: mediagis/nominatim:5.1
+    ports:
+      - "8080:8080"
+    environment:
+      PBF_PATH: /app/data/guadalajara.osm.pbf
+      REPLICATION_URL: https://download.geofabrik.de/north-america/mexico-updates/
+      NOMINATIM_PASSWORD: super_secure
+    volumes:
+      - nominatim-data:/var/lib/postgresql/16/main
+      - ./data:/app/data
+    shm_size: 1gb
+
+volumes:
+  nominatim-data:

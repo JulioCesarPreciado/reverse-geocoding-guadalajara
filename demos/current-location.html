@@ -1,0 +1,63 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reverse Geocoding Demo - Guadalajara</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f0f0f0;
+    }
+    pre {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>📍 Reverse Geocoding - Tu ubicación actual</h1>
+  <p>Obteniendo ubicación y consultando Nominatim local...</p>
+  <pre id="result">Cargando...</pre>
+
+  <script>
+    const resultEl = document.getElementById("result");
+
+    function showResult(data) {
+      resultEl.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function showError(message) {
+      resultEl.textContent = `❌ Error: ${message}`;
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          fetch(
+            `http://localhost:8080/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          )
+            .then((res) => {
+              if (!res.ok) throw new Error("No se pudo conectar con la API.");
+              return res.json();
+            })
+            .then(showResult)
+            .catch((err) => showError(err.message));
+        },
+        (err) => {
+          showError("Permiso denegado o ubicación no disponible.");
+        }
+      );
+    } else {
+      showError("Geolocalización no soportada por este navegador.");
+    }
+  </script>
+</body>
+</html>

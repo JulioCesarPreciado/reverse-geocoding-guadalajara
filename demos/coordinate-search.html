@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscar dirección por coordenadas</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f0f0f0;
+        }
+
+        div {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 1rem;
+            height: auto;
+        }
+
+        @media screen and (max-width: 600px) {
+            div {
+                flex-direction: column;
+            }
+        }
+
+        @media screen and (min-width: 601px) {
+            div {
+                display: flex;
+            }
+
+            form {
+                flex-basis: 30%;
+                max-width: 30%;
+            }
+
+            pre {
+                flex-basis: 70%;
+                max-width: 70%;
+            }
+        }
+
+        form {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        pre {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            width: 100%;
+            margin: 0;
+        }
+
+        input {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            align-self: center;
+            box-shadow: #2d90e7 0 0 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+            box-shadow: #0056b3 0 0 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Buscar dirección por coordenadas</h1>
+    <p>Introduce las coordenadas de latitud y longitud para buscar la dirección.</p>
+    <div>
+        <form id="geoForm">
+            <label>Latitud:</label>
+            <input step="any" name="lat" required />
+
+            <label>Longitud:</label>
+            <input step="any" name="lon" required />
+
+            <button type="submit">Buscar dirección</button>
+        </form>
+
+        <pre id="result">Esperando datos...</pre>
+    </div>
+    <script>
+        const form = document.getElementById("geoForm");
+        const resultEl = document.getElementById("result");
+
+        function showResult(data) {
+            resultEl.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function showError(message) {
+            resultEl.textContent = `❌ Error: ${message}`;
+        }
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const lat = form.lat.value;
+            const lon = form.lon.value;
+
+            fetch(`http://localhost:8080/reverse?lat=${lat}&lon=${lon}&format=json`)
+                .then((res) => {
+                    if (!res.ok) throw new Error("No se pudo conectar con la API.");
+                    return res.json();
+                })
+                .then(showResult)
+                .catch((err) => showError(err.message));
+        });
+    </script>
+</body>
+
+</html>
