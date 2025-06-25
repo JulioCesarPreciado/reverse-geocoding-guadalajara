@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   nominatim:
     container_name: nominatim
